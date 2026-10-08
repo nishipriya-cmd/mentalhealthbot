@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e9eff1;
+    --surface: #ffffff;
+    --ink: #1b2b34;
+    --muted: #5b6b73;
+    --line: #cfd9dd;
+    --accent: #17696f;
+    --accent-ink: #ffffff;
+    --bot: #ffffff;
+    --user: #17696f;
+    --serif: "Literata", Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11191d;
+      --surface: #19242a;
+      --ink: #e6eef1;
+      --muted: #93a4ac;
+      --line: #2c3b43;
+      --accent: #4fb3ba;
+      --accent-ink: #0c1316;
+      --bot: #1f2d34;
+      --user: #4fb3ba;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .screen { display: none; height: 100%; }
+  .screen.on { display: block; }
+
+  /* ---------- consent ---------- */
+  #consent .wrap { max-width: 640px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font: 600 1.7rem/1.25 var(--serif); margin: 0 0 .5rem; }
+  h2 { font: 600 1.05rem/1.3 var(--serif); margin: 1.6rem 0 .3rem; }
+  p { margin: .4rem 0; }
+  .lede { color: var(--muted); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin-top: 1.4rem;
+  }
+  label.check { display: flex; gap: .65rem; align-items: flex-start; margin: .7rem 0; cursor: pointer; }
+  label.check input { margin-top: .3rem; width: 1.05rem; height: 1.05rem; accent-color: var(--accent); }
+  button, input[type=text] { font: inherit; }
+  .primary {
+    background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 8px; padding: .7rem 1.2rem; cursor: pointer; font-weight: 600;
+  }
+  .primary:disabled { opacity: .45; cursor: not-allowed; }
+  .link { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 0; }
+  #returning { margin-top: 1.4rem; color: var(--muted); }
+  #codeRow { display: none; margin-top: .6rem; gap: .5rem; }
+  #codeRow.on { display: flex; }
+  #codeInput {
+    flex: 1; padding: .6rem .75rem; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    text-transform: uppercase;
+  }
+  .err { color: #b3261e; min-height: 1.4em; margin-top: .6rem; }
+  @media (prefers-color-scheme: dark) { .err { color: #ff8a80; } }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- chat ---------- */
+  #chat { display: none; flex-direction: column; max-width: 720px; margin: 0 auto; height: 100%; }
+  #chat.on { display: flex; }
+  header.bar {
+    padding: .9rem 1.1rem; border-bottom: 1px solid var(--line);
+    background: var(--surface); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  }
+  header.bar .name { font: 600 1.15rem/1.2 var(--serif); }
+  header.bar .code { color: var(--muted); font-size: .85rem; }
+  #log { flex: 1; overflow-y: auto; padding: 1.1rem; display: flex; flex-direction: column; gap: .7rem; }
+  .msg { max-width: 82%; padding: .65rem .9rem; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.bot { align-self: flex-start; background: var(--bot); border: 1px solid var(--line); font-family: var(--serif); border-bottom-left-radius: 4px; }
+  .msg.user { align-self: flex-end; background: var(--user); color: var(--accent-ink); border-bottom-right-radius: 4px; }
+  .msg.note { align-self: center; max-width: 100%; color: var(--muted); font-size: .9rem; text-align: center; background: none; }
+  .typing { color: var(--muted); font-style: italic; }
+  form.send { display: flex; gap: .6rem; padding: .8rem 1.1rem; background: var(--surface); border-top: 1px solid var(--line); }
+  #input {
+    flex: 1; resize: none; padding: .6rem .75rem; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    font: inherit; max-height: 8rem;
+  }
+  footer.note { padding: .5rem 1.1rem .8rem; color: var(--muted); font-size: .8rem; background: var(--surface); }
+</style>
+</head>
+<body>
+
+<!-- ======================= CONSENT ======================= -->
+<main id="consent" class="screen on">
+  <div class="wrap">
+    <h1>Chatting with an AI: research study</h1>
+    <p class="lede">Please read this page, then choose whether to take part.</p>
+
+    <h2>What this study is about</h2>
+    <p>This study looks at how people experience ongoing conversations with an AI chatbot. You will chat with an AI system, which is not a person, over several days. The chatbot may change during the study.</p>
+
+    <h2>What you will do</h2>
+    <p>Chat as much or as little as you like. Your messages and the chatbot's replies are recorded and linked only to a random code, not to your name. Do not share your name, address, or other details that could identify you.</p>
+
+    <h2>Possible discomfort</h2>
+    <p>You may form a sense of connection with the chatbot, and some people feel a little sad or unsettled if it changes or is withdrawn. If you feel upset at any point, stop chatting and contact someone you trust or your local support service. [ADD LOCAL SUPPORT SERVICE DETAILS]</p>
+
+    <h2>Your rights</h2>
+    <p>Taking part is voluntary. You can stop at any time without giving a reason. To withdraw your data, email your code to [YOUR EMAIL]. After the study you will get a full explanation of its purpose.</p>
+
+    <h2>Who is running it</h2>
+    <p>[YOUR NAME], [YOUR UNIVERSITY / DEPARTMENT]. Ethics approval reference: [REFERENCE NUMBER].</p>
+
+    <div class="card">
+      <label class="check"><input type="checkbox" class="agree"> <span>I am 18 or older.</span></label>
+      <label class="check"><input type="checkbox" class="agree"> <span>I understand I am chatting with an AI, not a person.</span></label>
+      <label class="check"><input type="checkbox" class="agree"> <span>I understand my chat messages will be recorded and used for research, and that I can withdraw at any time.</span></label>
+      <label class="check"><input type="checkbox" class="agree"> <span>I agree to take part.</span></label>
+      <button id="begin" class="primary" disabled>Start chatting</button>
+      <div id="err" class="err" role="alert"></div>
+    </div>
+
+    <p id="returning">Already taking part? <button class="link" id="showCode" type="button">Enter your code</button></p>
+    <div id="codeRow">
+      <input id="codeInput" type="text" maxlength="12" placeholder="Your code" aria-label="Your participant code" autocomplete="off">
+      <button id="codeGo" class="primary" type="button">Continue</button>
+    </div>
+  </div>
+</main>
+
+<!-- ======================= CHAT ======================= -->
+<section id="chat" class="screen">
+  <header class="bar">
+    <span class="name" id="botName">Chat</span>
+    <span class="code" id="codeLabel"></span>
+  </header>
+  <div id="log" aria-live="polite"></div>
+  <form class="send" id="sendForm">
+    <textarea id="input" rows="1" maxlength="1000" placeholder="Type a message" aria-label="Message"></textarea>
+    <button class="primary" id="sendBtn" type="submit">Send</button>
+  </form>
+  <footer class="note">You are chatting with an AI. Keep your code safe: you need it to come back. Press Enter to send, Shift+Enter for a new line.</footer>
+</section>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const sessionId = sessionStorage.getItem('sid') || crypto.randomUUID();
+  sessionStorage.setItem('sid', sessionId);
+
+  let code = localStorage.getItem('study_code') || '';
+  let retired = false;
+
+  // ---------- consent ----------
+  const boxes = Array.from(document.querySelectorAll('.agree'));
+  const begin = $('begin');
+  boxes.forEach((b) => b.addEventListener('change', () => {
+    begin.disabled = !boxes.every((x) => x.checked);
+  }));
+
+  $('showCode').addEventListener('click', () => $('codeRow').classList.toggle('on'));
+  begin.addEventListener('click', () => start({ consent: true }));
+  $('codeGo').addEventListener('click', () => start({ code: $('codeInput').value }));
+
+  async function start(extra) {
+    $('err').textContent = '';
+    try {
+      const r = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.assign({ session_id: sessionId }, extra)),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        localStorage.removeItem('study_code');
+        $('consent').classList.add('on');
+        $('chat').classList.remove('on');
+        $('err').textContent = d.error || 'Something went wrong.';
+        return;
+      }
+      code = d.code;
+      localStorage.setItem('study_code', code);
+      openChat(d);
+    } catch (e) {
+      $('err').textContent = 'Could not reach the server. Check your connection and try again.';
+    }
+  }
+
+  // ---------- chat ----------
+  function openChat(d) {
+    $('consent').classList.remove('on');
+    $('chat').classList.add('on');
+    $('botName').textContent = d.bot_name;
+    $('codeLabel').textContent = 'Your code: ' + d.code;
+    $('log').innerHTML = '';
+    if (!d.history.length && !d.retired) {
+      add('note', 'Say hello to start the conversation.');
+    }
+    d.history.forEach((m) => add(m.role === 'user' ? 'user' : 'bot', m.content));
+    if (d.retired) retire(d.retirement_message);
+    scroll();
+  }
+
+  function add(kind, text) {
+    const el = document.createElement('div');
+    el.className = 'msg ' + kind;
+    el.textContent = text;
+    $('log').appendChild(el);
+    scroll();
+    return el;
+  }
+  function scroll() { const l = $('log'); l.scrollTop = l.scrollHeight; }
+
+  function retire(text) {
+    retired = true;
+    add('note', text);
+    $('input').disabled = true;
+    $('sendBtn').disabled = true;
+    $('input').placeholder = 'This chatbot is no longer available';
+  }
+
+  $('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('sendForm').requestSubmit(); }
+  });
+  $('input').addEventListener('input', (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+  });
+
+  $('sendForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (retired) return;
+    const text = $('input').value.trim();
+    if (!text) return;
+    $('input').value = '';
+    $('input').style.height = 'auto';
+    $('sendBtn').disabled = true;
+    add('user', text);
+    const typing = add('bot typing', 'typing...');
+    try {
+      const r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, session_id: sessionId, message: text }),
+      });
+      const d = await r.json();
+      typing.remove();
+      if (d.retired) { retire(d.retirement_message); return; }
+      if (!r.ok) { add('note', d.error || 'Something went wrong.'); }
+      else { add('bot', d.reply); }
+    } catch (err) {
+      typing.remove();
+      add('note', 'Could not reach the server. Please try again.');
+    }
+    $('sendBtn').disabled = false;
+    $('input').focus();
+  });
+
+  // resume automatically for returning participants on this device
+  if (code) start({ code: code });
+})();
+</script>
+</body>
+</html>
