@@ -3,177 +3,314 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chat study</title>
+<title>A little chat space</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #e9eff1;
-    --surface: #ffffff;
-    --ink: #1b2b34;
-    --muted: #5b6b73;
-    --line: #cfd9dd;
-    --accent: #17696f;
-    --accent-ink: #ffffff;
-    --bot: #ffffff;
-    --user: #17696f;
-    --serif: "Literata", Georgia, "Times New Roman", serif;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #11191d;
-      --surface: #19242a;
-      --ink: #e6eef1;
-      --muted: #93a4ac;
-      --line: #2c3b43;
-      --accent: #4fb3ba;
-      --accent-ink: #0c1316;
-      --bot: #1f2d34;
-      --user: #4fb3ba;
-    }
+    --sun: #ffd93d;
+    --butter: #fff1a6;
+    --pink: #ffb3c7;
+    --pink-deep: #ff8fae;
+    --mint: #d2f3dc;
+    --sky: #c4e8f6;
+    --ink: #3b2a4a;
+    --ink-soft: #6a5a78;
+    --paper: #fffdf6;
+    --display: "Fredoka", "Trebuchet MS", sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
   body {
-    background: var(--bg);
     color: var(--ink);
-    font: 16px/1.55 var(--sans);
+    font: 17px/1.55 var(--body);
+    background-color: var(--butter);
+    background-image: radial-gradient(var(--sun) 2px, transparent 2.6px);
+    background-size: 28px 28px;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  .screen { display: none; height: 100%; }
+  .screen { display: none; }
   .screen.on { display: block; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  /* ---------- shared bits ---------- */
+  .chick { display: block; }
+  .btn {
+    font: 600 1.05rem var(--display);
+    color: var(--ink);
+    background: var(--pink);
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    padding: .65rem 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform .08s, box-shadow .08s;
+  }
+  .btn:hover:not(:disabled) { background: var(--pink-deep); }
+  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: 0 4px 0 var(--ink-soft); }
+  .linkbtn { background: none; border: 0; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-weight: 700; }
 
   /* ---------- consent ---------- */
-  #consent .wrap { max-width: 640px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
-  h1 { font: 600 1.7rem/1.25 var(--serif); margin: 0 0 .5rem; }
-  h2 { font: 600 1.05rem/1.3 var(--serif); margin: 1.6rem 0 .3rem; }
-  p { margin: .4rem 0; }
-  .lede { color: var(--muted); }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 1rem 1.1rem;
+  #consent .wrap { max-width: 660px; margin: 0 auto; padding: 2rem 1.1rem 3.5rem; }
+  .hero { text-align: center; padding: 1rem 0 .5rem; }
+  .hero .chick { width: 150px; height: 150px; margin: 0 auto .4rem; animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  h1 { font: 600 2.05rem/1.15 var(--display); margin: .2rem 0 .5rem; }
+  h2 { font: 600 1.2rem/1.3 var(--display); margin: 1.5rem 0 .2rem; }
+  p { margin: .35rem 0; }
+  .sub { font-size: 1.1rem; color: var(--ink-soft); max-width: 30rem; margin: 0 auto; }
+  .sheet {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 30px;
+    padding: .6rem 1.5rem 1.6rem;
     margin-top: 1.4rem;
+    box-shadow: 7px 7px 0 var(--pink);
   }
-  label.check { display: flex; gap: .65rem; align-items: flex-start; margin: .7rem 0; cursor: pointer; }
-  label.check input { margin-top: .3rem; width: 1.05rem; height: 1.05rem; accent-color: var(--accent); }
-  button, input[type=text] { font: inherit; }
-  .primary {
-    background: var(--accent); color: var(--accent-ink);
-    border: 0; border-radius: 8px; padding: .7rem 1.2rem; cursor: pointer; font-weight: 600;
+  .care {
+    background: var(--mint);
+    border: 2.5px solid var(--ink);
+    border-radius: 20px;
+    padding: .8rem 1rem;
+    margin-top: 1.3rem;
   }
-  .primary:disabled { opacity: .45; cursor: not-allowed; }
-  .link { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 0; }
-  #returning { margin-top: 1.4rem; color: var(--muted); }
-  #codeRow { display: none; margin-top: .6rem; gap: .5rem; }
+  .care strong { font-family: var(--display); font-weight: 600; }
+  .agree-box { background: var(--butter); border: 2.5px dashed var(--ink); border-radius: 22px; padding: .7rem 1rem; margin-top: 1.5rem; }
+  label.check { display: flex; gap: .7rem; align-items: flex-start; margin: .65rem 0; cursor: pointer; }
+  label.check input { width: 1.3rem; height: 1.3rem; margin-top: .25rem; accent-color: var(--ink); flex: none; }
+  .start-row { text-align: center; margin-top: 1.2rem; }
+  .err { color: #b3261e; font-weight: 700; min-height: 1.5em; margin-top: .6rem; text-align: center; }
+  #returning { text-align: center; margin-top: 1.6rem; color: var(--ink-soft); }
+  #codeRow { display: none; justify-content: center; gap: .6rem; margin-top: .8rem; flex-wrap: wrap; }
   #codeRow.on { display: flex; }
   #codeInput {
-    flex: 1; padding: .6rem .75rem; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-    text-transform: uppercase;
+    font: 700 1.05rem var(--body); letter-spacing: .08em; text-transform: uppercase;
+    padding: .6rem 1rem; border: 2.5px solid var(--ink); border-radius: 999px;
+    background: var(--paper); color: var(--ink); width: 11rem; text-align: center;
   }
-  .err { color: #b3261e; min-height: 1.4em; margin-top: .6rem; }
-  @media (prefers-color-scheme: dark) { .err { color: #ff8a80; } }
-  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   /* ---------- chat ---------- */
-  #chat { display: none; flex-direction: column; max-width: 720px; margin: 0 auto; height: 100%; }
-  #chat.on { display: flex; }
+  #chat { height: 100%; }
+  #chat.on { display: flex; justify-content: center; }
+  .room {
+    width: 100%; max-width: 780px; height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--paper);
+    border-left: 3px solid var(--ink); border-right: 3px solid var(--ink);
+  }
+  @media (min-width: 840px) {
+    #chat.on { padding: 1.2rem 0; }
+    .room { height: calc(100% - 0px); border: 3px solid var(--ink); border-radius: 34px; overflow: hidden; box-shadow: 8px 8px 0 var(--pink); }
+  }
   header.bar {
-    padding: .9rem 1.1rem; border-bottom: 1px solid var(--line);
-    background: var(--surface); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    background: var(--sun);
+    border-bottom: 3px solid var(--ink);
+    padding: .6rem 1rem;
+    display: flex; align-items: center; gap: .7rem;
   }
-  header.bar .name { font: 600 1.15rem/1.2 var(--serif); }
-  header.bar .code { color: var(--muted); font-size: .85rem; }
-  #log { flex: 1; overflow-y: auto; padding: 1.1rem; display: flex; flex-direction: column; gap: .7rem; }
-  .msg { max-width: 82%; padding: .65rem .9rem; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .msg.bot { align-self: flex-start; background: var(--bot); border: 1px solid var(--line); font-family: var(--serif); border-bottom-left-radius: 4px; }
-  .msg.user { align-self: flex-end; background: var(--user); color: var(--accent-ink); border-bottom-right-radius: 4px; }
-  .msg.note { align-self: center; max-width: 100%; color: var(--muted); font-size: .9rem; text-align: center; background: none; }
-  .typing { color: var(--muted); font-style: italic; }
-  form.send { display: flex; gap: .6rem; padding: .8rem 1.1rem; background: var(--surface); border-top: 1px solid var(--line); }
+  header.bar .chick { width: 46px; height: 46px; flex: none; }
+  .who { flex: 1; min-width: 0; }
+  .who .name { font: 600 1.3rem/1.1 var(--display); }
+  .who .status { font-size: .85rem; color: var(--ink); opacity: .8; }
+  .codechip { font: 700 .8rem var(--body); background: var(--paper); border: 2px solid var(--ink); border-radius: 999px; padding: .15rem .7rem; white-space: nowrap; }
+
+  #log { flex: 1; overflow-y: auto; padding: 1.1rem 1rem; display: flex; flex-direction: column; gap: .75rem; }
+  .msg { max-width: 82%; padding: .65rem 1rem; border: 2.5px solid var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.bot { align-self: flex-start; background: #fff; border-radius: 24px 24px 24px 6px; }
+  .msg.user { align-self: flex-end; background: var(--pink); border-radius: 24px 24px 6px 24px; }
+  .msg.note { align-self: center; max-width: 92%; border: 0; background: none; color: var(--ink-soft); text-align: center; font-size: .95rem; padding: .2rem; }
+  .typing { display: inline-flex; gap: 5px; padding: .85rem 1rem; }
+  .typing i { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); display: block; animation: hop 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; }
+  .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes hop { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-6px); opacity: 1; } }
+
+  .crisis {
+    align-self: center; max-width: 94%;
+    background: var(--sky); border: 2.5px solid var(--ink); border-radius: 22px;
+    padding: .8rem 1rem;
+  }
+  .crisis strong { font-family: var(--display); font-weight: 600; font-size: 1.1rem; }
+  .crisis .calls { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .6rem; }
+  .crisis a.btn { text-decoration: none; font-size: .95rem; padding: .45rem 1rem; background: var(--sun); display: inline-block; }
+
+  .moods { padding: .5rem 1rem 0; border-top: 3px solid var(--ink); background: var(--butter); }
+  .moods .ask { font: 600 .95rem var(--display); margin: .1rem 0 .4rem; }
+  .chips { display: flex; gap: .45rem; overflow-x: auto; padding-bottom: .55rem; scrollbar-width: thin; }
+  .chip {
+    flex: none; font: 700 .9rem var(--body); color: var(--ink);
+    background: #fff; border: 2.5px solid var(--ink); border-radius: 999px;
+    padding: .3rem .85rem; cursor: pointer;
+  }
+  .chip:hover { background: var(--sun); }
+
+  form.send { display: flex; gap: .6rem; padding: .7rem 1rem; background: var(--butter); align-items: flex-end; }
   #input {
-    flex: 1; resize: none; padding: .6rem .75rem; border-radius: 10px;
-    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
-    font: inherit; max-height: 8rem;
+    flex: 1; resize: none; max-height: 8rem;
+    font: 600 1rem/1.4 var(--body); color: var(--ink);
+    padding: .65rem 1rem; border: 2.5px solid var(--ink); border-radius: 22px; background: #fff;
   }
-  footer.note { padding: .5rem 1.1rem .8rem; color: var(--muted); font-size: .8rem; background: var(--surface); }
+  #input::placeholder { color: var(--ink-soft); font-weight: 400; }
+  form.send .btn { padding: .6rem 1.2rem; }
+
+  footer.help {
+    background: var(--mint); border-top: 3px solid var(--ink);
+    padding: .5rem 1rem .6rem; font-size: .86rem; line-height: 1.4; text-align: center;
+  }
+  footer.help b { font-family: var(--display); font-weight: 600; }
+  footer.help a { color: var(--ink); font-weight: 700; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero .chick, .typing i { animation: none; }
+    .btn { transition: none; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ======================= CONSENT ======================= -->
+<!-- little chick mascot, drawn once and reused -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="chick" viewBox="0 0 120 120">
+    <path d="M60 24 C58 13 52 8 45 7 C46 16 51 22 60 24Z" fill="#8fd694" stroke="#3b2a4a" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M60 24 C63 14 69 10 76 11 C74 19 69 23 60 24Z" fill="#8fd694" stroke="#3b2a4a" stroke-width="3.5" stroke-linejoin="round"/>
+    <ellipse cx="46" cy="109" rx="9" ry="5" fill="#ff9f43" stroke="#3b2a4a" stroke-width="3"/>
+    <ellipse cx="74" cy="109" rx="9" ry="5" fill="#ff9f43" stroke="#3b2a4a" stroke-width="3"/>
+    <ellipse cx="60" cy="68" rx="46" ry="40" fill="#ffd93d" stroke="#3b2a4a" stroke-width="3.5"/>
+    <path d="M16 70 C8 74 8 86 18 88" fill="#ffd93d" stroke="#3b2a4a" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M104 70 C112 74 112 86 102 88" fill="#ffd93d" stroke="#3b2a4a" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="43" cy="62" r="6" fill="#3b2a4a"/><circle cx="41" cy="60" r="1.9" fill="#fff"/>
+    <circle cx="77" cy="62" r="6" fill="#3b2a4a"/><circle cx="75" cy="60" r="1.9" fill="#fff"/>
+    <ellipse cx="30" cy="76" rx="8" ry="5" fill="#ff8fae" opacity=".85"/>
+    <ellipse cx="90" cy="76" rx="8" ry="5" fill="#ff8fae" opacity=".85"/>
+    <path d="M53 72 L67 72 L60 81 Z" fill="#ff9f43" stroke="#3b2a4a" stroke-width="3" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<!-- ======================= WELCOME / CONSENT ======================= -->
 <main id="consent" class="screen on">
   <div class="wrap">
-    <h1>Chatting with an AI: research study</h1>
-    <p class="lede">Please read this page, then choose whether to take part.</p>
-
-    <h2>What this study is about</h2>
-    <p>This study looks at how people experience ongoing conversations with an AI chatbot. You will chat with an AI system, which is not a person, over several days. The chatbot may change during the study.</p>
-
-    <h2>What you will do</h2>
-    <p>Chat as much or as little as you like. Your messages and the chatbot's replies are recorded and linked only to a random code, not to your name. Do not share your name, address, or other details that could identify you.</p>
-
-    <h2>Possible discomfort</h2>
-    <p>You may form a sense of connection with the chatbot, and some people feel a little sad or unsettled if it changes or is withdrawn. If you feel upset at any point, stop chatting and contact someone you trust or your local support service. [ADD LOCAL SUPPORT SERVICE DETAILS]</p>
-
-    <h2>Your rights</h2>
-    <p>Taking part is voluntary. You can stop at any time without giving a reason. To withdraw your data, email your code to [YOUR EMAIL]. After the study you will get a full explanation of its purpose.</p>
-
-    <h2>Who is running it</h2>
-    <p>[YOUR NAME], [YOUR UNIVERSITY / DEPARTMENT]. Ethics approval reference: [REFERENCE NUMBER].</p>
-
-    <div class="card">
-      <label class="check"><input type="checkbox" class="agree"> <span>I am 18 or older.</span></label>
-      <label class="check"><input type="checkbox" class="agree"> <span>I understand I am chatting with an AI, not a person.</span></label>
-      <label class="check"><input type="checkbox" class="agree"> <span>I understand my chat messages will be recorded and used for research, and that I can withdraw at any time.</span></label>
-      <label class="check"><input type="checkbox" class="agree"> <span>I agree to take part.</span></label>
-      <button id="begin" class="primary" disabled>Start chatting</button>
-      <div id="err" class="err" role="alert"></div>
+    <div class="hero">
+      <svg class="chick" role="img" aria-label="A smiling little chick"><use href="#chick"/></svg>
+      <h1>Hi, welcome in!</h1>
+      <p class="sub">A cosy little space to chat with an AI about your day and how you are feeling.</p>
     </div>
 
-    <p id="returning">Already taking part? <button class="link" id="showCode" type="button">Enter your code</button></p>
+    <div class="sheet">
+      <h2>What this is</h2>
+      <p>This is a research study about how people experience ongoing chats with an AI chatbot. You will chat with an AI, not a person, over several days. The chatbot may change during the study.</p>
+      <p><b>It is not a therapist and not a crisis service.</b></p>
+
+      <h2>What you will do</h2>
+      <p>Chat as much or as little as you like. Your messages and the chatbot's replies are recorded and linked only to a random code, not your name. Please do not share your name, address, or anything that could identify you.</p>
+
+      <h2>Looking after yourself</h2>
+      <p>Talking about feelings can bring things up, and some people feel a little sad or unsettled if the chatbot changes or goes away. That is okay and quite common. You can stop at any time.</p>
+      <div class="care">
+        <strong>💛 Need a real person to talk to?</strong><br>
+        <b>Tele MANAS</b> is India's free, 24/7 mental health helpline.<br>
+        Call <a href="tel:14416"><b>14416</b></a> or <a href="tel:18008914416"><b>1-800-891-4416</b></a>. You can choose your language.
+        If you are in immediate danger, call your local emergency number.
+      </div>
+
+      <h2>Your rights</h2>
+      <p>Taking part is voluntary and you can stop whenever you like, without giving a reason. To withdraw your data, email your code to <a class="contact-email" href="#">the researcher</a>. After the study you will get a full explanation of its purpose.</p>
+
+      <h2>Who is running it</h2>
+      <p>Nishi, CHRIST University. Questions: <a class="contact-email" href="#">email</a>.</p>
+
+      <div class="agree-box">
+        <label class="check"><input type="checkbox" class="agree"> <span>I am 18 or older.</span></label>
+        <label class="check"><input type="checkbox" class="agree"> <span>I understand I am chatting with an AI, not a person.</span></label>
+        <label class="check"><input type="checkbox" class="agree"> <span>I understand my chat messages will be recorded for research and that I can withdraw at any time.</span></label>
+        <label class="check"><input type="checkbox" class="agree"> <span>I agree to take part.</span></label>
+      </div>
+      <div class="start-row">
+        <button id="begin" class="btn" disabled>Start chatting</button>
+        <div id="err" class="err" role="alert"></div>
+      </div>
+    </div>
+
+    <p id="returning">Already taking part? <button class="linkbtn" id="showCode" type="button">Enter your code</button></p>
     <div id="codeRow">
-      <input id="codeInput" type="text" maxlength="12" placeholder="Your code" aria-label="Your participant code" autocomplete="off">
-      <button id="codeGo" class="primary" type="button">Continue</button>
+      <input id="codeInput" type="text" maxlength="12" placeholder="YOUR CODE" aria-label="Your participant code" autocomplete="off">
+      <button id="codeGo" class="btn" type="button">Continue</button>
     </div>
   </div>
 </main>
 
 <!-- ======================= CHAT ======================= -->
 <section id="chat" class="screen">
-  <header class="bar">
-    <span class="name" id="botName">Chat</span>
-    <span class="code" id="codeLabel"></span>
-  </header>
-  <div id="log" aria-live="polite"></div>
-  <form class="send" id="sendForm">
-    <textarea id="input" rows="1" maxlength="1000" placeholder="Type a message" aria-label="Message"></textarea>
-    <button class="primary" id="sendBtn" type="submit">Send</button>
-  </form>
-  <footer class="note">You are chatting with an AI. Keep your code safe: you need it to come back. Press Enter to send, Shift+Enter for a new line.</footer>
+  <div class="room">
+    <header class="bar">
+      <svg class="chick" aria-hidden="true"><use href="#chick"/></svg>
+      <div class="who">
+        <div class="name" id="botName">Chat</div>
+        <div class="status">an AI, here to listen</div>
+      </div>
+      <span class="codechip" id="codeLabel"></span>
+    </header>
+
+    <div id="log" aria-live="polite"></div>
+
+    <div class="moods" id="moods">
+      <p class="ask">How are you feeling right now? Tap one to start.</p>
+      <div class="chips">
+        <button class="chip" type="button" data-t="I'm feeling happy today 😊">😊 Happy</button>
+        <button class="chip" type="button" data-t="I'm feeling calm today 😌">😌 Calm</button>
+        <button class="chip" type="button" data-t="I'm feeling a bit sad today 😔">😔 Sad</button>
+        <button class="chip" type="button" data-t="I'm feeling anxious today 😟">😟 Anxious</button>
+        <button class="chip" type="button" data-t="I'm feeling frustrated today 😠">😠 Frustrated</button>
+        <button class="chip" type="button" data-t="I'm feeling tired today 😴">😴 Tired</button>
+        <button class="chip" type="button" data-t="I'm feeling lonely today 🥺">🥺 Lonely</button>
+        <button class="chip" type="button" data-t="I'm feeling overwhelmed today 🌀">🌀 Overwhelmed</button>
+        <button class="chip" type="button" data-t="I'm not sure how I feel 🤔">🤔 Not sure</button>
+      </div>
+    </div>
+
+    <form class="send" id="sendForm">
+      <textarea id="input" rows="1" maxlength="1000" placeholder="What's on your mind?" aria-label="Your message"></textarea>
+      <button class="btn" id="sendBtn" type="submit">Send</button>
+    </form>
+
+    <footer class="help">
+      💛 <b>Need to talk to someone?</b> Tele MANAS is free and open 24/7:
+      <a href="tel:14416">14416</a> or <a href="tel:18008914416">1-800-891-4416</a>.
+      You are chatting with an AI. Keep your code safe so you can come back.
+    </footer>
+  </div>
 </section>
 
 <script>
 (function () {
+  // Change this ONE line to your full email address
+  const CONTACT_EMAIL = "nishi.priya@christuniversity.in";
+
   const $ = (id) => document.getElementById(id);
+  document.querySelectorAll('.contact-email').forEach((a) => {
+    a.href = 'mailto:' + CONTACT_EMAIL;
+    a.textContent = CONTACT_EMAIL;
+  });
+
   const sessionId = sessionStorage.getItem('sid') || crypto.randomUUID();
   sessionStorage.setItem('sid', sessionId);
 
-  let code = localStorage.getItem('study_code') || '';
+  let code = '';
+  try { code = localStorage.getItem('study_code') || ''; } catch (e) {}
   let retired = false;
 
-  // ---------- consent ----------
+  // words that should also trigger the helpline card
+  const CRISIS = /(suicid|kill myself|end my life|want to die|wanna die|self[- ]?harm|hurt myself|cut myself|harm myself|don'?t want to live|no reason to live|better off dead)/i;
+
+  // ---------- welcome ----------
   const boxes = Array.from(document.querySelectorAll('.agree'));
   const begin = $('begin');
   boxes.forEach((b) => b.addEventListener('change', () => {
     begin.disabled = !boxes.every((x) => x.checked);
   }));
-
   $('showCode').addEventListener('click', () => $('codeRow').classList.toggle('on'));
   begin.addEventListener('click', () => start({ consent: true }));
   $('codeGo').addEventListener('click', () => start({ code: $('codeInput').value }));
@@ -188,14 +325,14 @@
       });
       const d = await r.json();
       if (!r.ok) {
-        localStorage.removeItem('study_code');
+        try { localStorage.removeItem('study_code'); } catch (e) {}
         $('consent').classList.add('on');
         $('chat').classList.remove('on');
         $('err').textContent = d.error || 'Something went wrong.';
         return;
       }
       code = d.code;
-      localStorage.setItem('study_code', code);
+      try { localStorage.setItem('study_code', code); } catch (e) {}
       openChat(d);
     } catch (e) {
       $('err').textContent = 'Could not reach the server. Check your connection and try again.';
@@ -207,12 +344,13 @@
     $('consent').classList.remove('on');
     $('chat').classList.add('on');
     $('botName').textContent = d.bot_name;
-    $('codeLabel').textContent = 'Your code: ' + d.code;
+    $('codeLabel').textContent = 'code ' + d.code;
     $('log').innerHTML = '';
     if (!d.history.length && !d.retired) {
-      add('note', 'Say hello to start the conversation.');
+      add('note', 'Say hello, or tap how you are feeling below. There is no wrong way to start.');
     }
     d.history.forEach((m) => add(m.role === 'user' ? 'user' : 'bot', m.content));
+    $('moods').style.display = d.history.length ? 'none' : '';
     if (d.retired) retire(d.retirement_message);
     scroll();
   }
@@ -225,6 +363,32 @@
     scroll();
     return el;
   }
+
+  function typingBubble() {
+    const el = document.createElement('div');
+    el.className = 'msg bot typing';
+    el.innerHTML = '<i></i><i></i><i></i>';
+    el.setAttribute('aria-label', 'typing');
+    $('log').appendChild(el);
+    scroll();
+    return el;
+  }
+
+  function crisisCard() {
+    const el = document.createElement('div');
+    el.className = 'crisis';
+    el.innerHTML =
+      '<strong>💛 You matter, and you do not have to carry this alone.</strong>' +
+      '<p>If you are feeling very low or thinking about hurting yourself, please talk to someone right now. ' +
+      '<b>Tele MANAS</b> is free, confidential and open 24/7. If you are in immediate danger, call your local emergency number.</p>' +
+      '<div class="calls">' +
+      '<a class="btn" href="tel:14416">Call 14416</a>' +
+      '<a class="btn" href="tel:18008914416">Call 1-800-891-4416</a>' +
+      '</div>';
+    $('log').appendChild(el);
+    scroll();
+  }
+
   function scroll() { const l = $('log'); l.scrollTop = l.scrollHeight; }
 
   function retire(text) {
@@ -232,8 +396,15 @@
     add('note', text);
     $('input').disabled = true;
     $('sendBtn').disabled = true;
+    $('moods').style.display = 'none';
     $('input').placeholder = 'This chatbot is no longer available';
   }
+
+  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+    if (retired) return;
+    $('input').value = c.dataset.t;
+    $('input').focus();
+  }));
 
   $('input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('sendForm').requestSubmit(); }
@@ -248,11 +419,13 @@
     if (retired) return;
     const text = $('input').value.trim();
     if (!text) return;
+    const crisis = CRISIS.test(text);
     $('input').value = '';
     $('input').style.height = 'auto';
     $('sendBtn').disabled = true;
     add('user', text);
-    const typing = add('bot typing', 'typing...');
+    $('moods').style.display = 'none';
+    const typing = typingBubble();
     try {
       const r = await fetch('/api/chat', {
         method: 'POST',
@@ -268,6 +441,7 @@
       typing.remove();
       add('note', 'Could not reach the server. Please try again.');
     }
+    if (crisis) crisisCard();
     $('sendBtn').disabled = false;
     $('input').focus();
   });
